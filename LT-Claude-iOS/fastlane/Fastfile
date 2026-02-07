@@ -1,0 +1,54 @@
+# Itfddlanefile.rb
+# Configuration for LT Claude iOS TestFlight deployments
+
+# Learn more about each section under docs:
+# https://docs.fastlane.tools
+
+# Optional:
+# - Automatically increment build number
+# - Manage TestFlight testers
+# - Upload screenshots
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Build and upload to TestFlight"
+  lane :testflight do
+    # Increment build number
+    increment_build_number(xcodeproj: "LT-Claude-iOS.xcodeproj")
+    
+    # Build the app
+    build_app(
+      workspace: "LT-Claude-iOS.xcworkspace",
+      scheme: "LT-Claude-iOS",
+      configuration: "Release",
+      export_method: "app-store",
+      xcargs: [
+        "BUILD_NUMBER=#{lane_context[SharedValues::BUILD_NUMBER]}",
+        "DEVELOPMENT_TEAM=#{ENV['DEVELOPMENT_TEAM_ID']}"
+      ].compact.join(" ")
+    )
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV['APPLE_ID'],
+      app_identifier: "com.lt.claude-ios",
+      ipa: "LT-Claude-iOS.ipa"
+    )
+  end
+
+  desc "Increment build number only"
+  lane :increment do
+    increment_build_number(xcodeproj: "LT-Claude-iOS.xcodeproj")
+  end
+
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      workspace: "LT-Claude-iOS.xcworkspace",
+      scheme: "LT-Claude-iOS",
+      devices: ["iPhone 15"]
+    )
+  end
+end

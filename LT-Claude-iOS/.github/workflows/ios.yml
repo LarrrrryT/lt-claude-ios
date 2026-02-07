@@ -1,0 +1,94 @@
+name: iOS CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      increment_build:
+        description: 'Increment build number'
+        required: false
+        default: 'true'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Xcode
+        uses: actions/setup-xcode@v4
+        with:
+          xcode-version: '15.0'
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+          bundle install
+      
+      - name: Generate Xcode project
+        run: xcodegen generate
+      
+      - name: Build
+        run: |
+          xcodebuild -project LT-Claude-iOS.xcodeproj \
+            -scheme LT-Claude-iOS \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+  deploy-testflight:
+    name: Deploy to TestFlight
+    needs: build-and-test
+    runs-on: macos-14
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Xcode
+        uses: actions/setup-xcode@v4
+        with:
+          xcode-version: '15.0'
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Install dependencies
+        run: |
+          brew install xcodegen
+          bundle install
+      
+      - name: Generate Xcode project
+        run: xcodegen generate
+      
+      - name: Build for TestFlight
+        env:
+          DEVELOPMENT_TEAM_ID: ${{ secrets.DEVELOPMENT_TEAM_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        run: |
+          # Import API key for TestFlight upload
+          echo "$APP_STORE_CONNECT_API_KEY" | base64 --decode > AuthKey.p8
+          
+          # Install fastlane match for code signing
+          bundle exec fastlane match appstore --readonly --app_identifier "com.lt.claude-ios"
+          
+          # Build and upload
+          bundle exec fastlane testflight

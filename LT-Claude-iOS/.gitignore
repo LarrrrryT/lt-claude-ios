@@ -1,0 +1,40 @@
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+*.xcuserstate
+*.xcuserdata/
+DerivedData/
+build/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# OS Generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# IDEs
+.idea/
+*.swp
+*.swo
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/*.pem
+
+# Secrets
+*.p8
+*.mobileprovision

@@ -1,0 +1,8 @@
+# Appfile
+# Stores Apple ID and app info for Fastlane
+
+app_identifier("com.lt.claude-ios") # The bundle identifier of your app
+apple_id(ENV['APPLE_ID']) # Your Apple Developer ID email
+
+# For more information about the Appfile, see:
+# https://docs.fastlane.tools/advanced/Appfile/

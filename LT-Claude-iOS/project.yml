@@ -1,0 +1,52 @@
+name: LT-Claude-iOS
+options:
+  bundleIdPrefix: com.lt
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGN_STYLE: Manual
+
+targets:
+  LT-Claude-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+        type: group
+      - path: Resources
+        type: group
+    settings:
+      base:
+        INFOPLIST_FILE: Resources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.lt.claude-ios
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleName: Claude
+        CFBundleDisplayName: Claude
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundlePackageType: APPL
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        UILaunchScreen:
+          UIColorName: ""
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
